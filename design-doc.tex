@@ -3,8 +3,46 @@
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
+\usepackage{hyperref}
+
 \begin{document}
 
-This is SBXG's design doc. Pure \LaTeX.
+\section{Introduction}
+
+SBXG is a build orchestrator that provides means to generate from sources or
+foreign binaries a ready-to-flash SD card image for embedded systems.
+
+SBXG orchestrates several components:
+\begin{itemize}
+\item a toolchain to compile most of the other components;
+\item a bootloader builder;
+\item a primary kernel builder;
+\item an initramfs builder for the kernel that may rely on it;
+\item a primary rootfs generator;
+\item and a filesystem utility to generate the final image which will conain the
+  desired components.
+\end{itemize}
+
+All of these components can be used individually, or chained together to
+generate more complex systems. A brief description of each of them follow.
+
+\subsection{Toolchain Retriever}
+
+The \emph{toolchain} is a suite of software tools that allows to create another
+software. When we refer to a toolchain, we refer to a (cross) compiler driver
+and its own components (like gcc and the collection programs it relies on).
+
+Since SBXG is primarily targetting embedded platforms, the toolchain will mostly
+be arm-flavoured. The different arm architectures will vary in function of the
+\emph{processor} embedded on the SoC that ships with an \emph{embedded board}.
+
+We select our toolchains from \url{https://www.linaro.org/}, but custom ones can
+of course be provided.
+
+
+\subsection{Bootloader Builder}
+\subsection{Kernel Builder}
+\subsection{Initramfs Builder}
+\subsection{Rootfs Generator}
 
 \end{document}
