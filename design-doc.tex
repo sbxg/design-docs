@@ -10,7 +10,7 @@
 \usepackage{hyperref}
 \usepackage{mdframed}
 \usepackage{tikz}
-\usepackage{thmtools}
+\usepackage{caption}
 
 \usetikzlibrary{shapes,arrows,positioning}
 \tikzstyle{Block} = [draw, rectangle, minimum height=3em, minimum width=3em]
@@ -251,7 +251,53 @@ products of other SBXG components.
 We define an \emph{execution pipeline} as the sequential execution of one or
 several components.
 
-SBXG can produce an \emph{execution pipeline}, which will lead to the creation
-of one or several software components. They can be taken as
+To better illustrate what an execution pipeline, let's consider the following
+scenario. A user want to produce a read-to-flash image that contains an U-Boot
+image (the bootloader) and a Debian rootfs containing a Linux kernel with its
+modules. We just need to chain the components as follows:
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[Block] (uboot)                     {Bootloader Builder};
+    \node[Block] (kernel) [right=of uboot]   {Kernel Builder};
+    \node[Block] (rootfs) [right=of kernel]  {Rootfs Retriever};
+    \node[Block] (image)  [below=of rootfs]  {Image Retriever};
+    \node[Text]  (output) [left=of image]    {SBXG Image};
+    \draw[->] (uboot)    to (kernel);
+    \draw[->] (kernel)  to (rootfs);
+    \draw[->] (rootfs) to (image);
+    \draw[->] (image) to (output);
+  \end{tikzpicture}
+  \captionof{figure}{Execution pipeline with four components}
+  \label{fig:ex1}
+\end{center}
+
+Then, suppose one now want the kernel to use an initramfs. One now can insert
+the initramfs builder component in the pipeline:
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[Block] (uboot)                         {Bootloader Builder};
+    \node[Block] (initramfs) [right=of uboot]    {Initramfs Builder};
+    \node[Block] (kernel) [right=of initramfs]   {Kernel Builder};
+    \node[Block] (rootfs) [below=of kernel]  {Rootfs Retriever};
+    \node[Block] (image)  [left=of rootfs]  {Image Retriever};
+    \node[Text]  (output) [left=of image]   {SBXG Image};
+    \draw[->] (uboot)    to (initramfs);
+    \draw[->] (initramfs)    to (kernel);
+    \draw[->] (kernel)  to (rootfs);
+    \draw[->] (rootfs) to (image);
+    \draw[->] (image) to (output);
+  \end{tikzpicture}
+  \captionof{figure}{Execution pipeline with five components}
+\end{center}
+
+
+This example is simple enough to illustrate how powerful the execution pipeline,
+as an architectural element can be. However, the figure was over-simplified, and
+it didn't really show the hidden inherent complexity of SBXG. To have an
+accurate representation of the pipeline system, one must include the inputs and
+outputs of each component in the picture. We will do the exercise based on
+\autoref{fig:ex1}.
 
 \end{document}
