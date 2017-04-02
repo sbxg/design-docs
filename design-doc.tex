@@ -41,7 +41,8 @@
 \part{Overall description of SBXG}
 
 SBXG is a build orchestrator that provides means to generate from sources or
-foreign binaries a ready-to-flash SD (Secure Digital) card image for embedded systems.
+foreign binaries a ready-to-flash SD (Secure Digital) card image for embedded
+systems.
 
 SBXG orchestrates several components:
 \begin{itemize}
@@ -77,6 +78,16 @@ of course be provided.
   SBXG is required to fetch an external toolchain or to use an already existing
   one.
 \end{requirement}
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[Block] (component)                      {Toolchain Retriver};
+    \node[Text]  (config)    [left=of component]  {URL};
+    \node[Text]  (output)    [right=of component] {Binary Toolchain};
+    \draw[->] (config)    to (component);
+    \draw[->] (component) to (output);
+  \end{tikzpicture}
+\end{center}
 
 
 \section{Bootloader Builder Component}
@@ -160,19 +171,32 @@ contains kernel products which will be integrated within a package manager.
   \end{tikzpicture}
 \end{center}
 
-
-\section{Initramfs Builder Component}
+\subsection{Initramfs Builder Component}
 
 Some kernels may require an \emph{initramfs} to complete their boot process and
-to provide a basic shell in case of failure of the system.
+to provide a basic shell in case of failure of the system. Systems like
+\emph{busybox} allow to generate such software.
 
 \begin{requirement}
 SBXG is required to generate an initramfs on demand. It shall at least support
 the CPIO format.
 \end{requirement}
 
+\begin{center}
+  \begin{tikzpicture}
+    \node[Block] (component)                        {Initramfs Builder};
+    \node[Text]  (i_config)    [left=of component]  {Configuration};
+    \node[Text]  (i_sources)   [above=of i_config]  {Sources};
+    \node[Text]  (i_toolchain) [below=of i_config]  {Toolchain};
+    \node[Text]  (o_image)     [right=of component] {Initramfs};
+    \draw[->] (i_toolchain) to [out=0,in=180] (component);
+    \draw[->] (i_sources)   to [out=0,in=180] (component);
+    \draw[->] (i_config)    to [out=0,in=180] (component);
+    \draw[->] (component)   to [out=0,in=180] (o_image);
+  \end{tikzpicture}
+\end{center}
 
-\section{Rootfs Generator Component}
+\section{Rootfs Retriever Component}
 
 The \emph{rootfs} is mounted by the \emph{kernel} and contains the user-land
 programs and files that are necessary for the system to operate. Due to the vast
@@ -187,6 +211,17 @@ tools like Deboostrap.
 SBXG is required to integrate an externally generated rootfs in its production
 pipeline.
 \end{requirement}
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[Block] (component)                      {Rootfs Retriever};
+    \node[Text]  (config)    [left=of component]  {Script};
+    \node[Text]  (output)    [right=of component] {Rootfs};
+    \draw[->] (config)    to (component);
+    \draw[->] (component) to (output);
+  \end{tikzpicture}
+\end{center}
+
 
 \section{Description of the execution pipeline}
 
